@@ -2,78 +2,94 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Emre Gümüş | Gold Tracker Pro v7.0</title>
+<title>Emre Gümüş | Gold Tracker Pro v7.8</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     :root { 
-        --gold: #D4AF37; --bg: #000; --card-bg: #111; --text: #e0e0e0; 
-        --radius: 12px; --danger: #ff4d4d; --success: #2ecc71; 
+        --gold: #D4AF37; --bg: #0c0c0c; --card-bg: #1a1a1a; --text: #e0e0e0; 
+        --radius: 16px; --danger: #ff4d4d; --success: #2ecc71; 
         --input-bg: #151515; --info: #3498db; 
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
 
-    /* Giriş Ekranı */
+    /* Giriş */
     #loginScreen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .premium-input { 
-        width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid #333; 
-        border-radius: 10px; color: #fff; font-size: 1.1em; margin-bottom: 12px; 
-        transition: all 0.3s ease; text-align: center; 
-    }
-    .premium-input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+    .premium-input { width: 100%; padding: 18px; background: #111; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1.1em; margin-bottom: 12px; text-align: center; }
     
-    header { background: #000; padding: 12px; text-align: center; border-bottom: 1px solid #222; color: var(--gold); font-weight: 700; font-size: 1.1em; letter-spacing: 2px; }
-    nav { display: flex; background: #000; border-bottom: 1px solid #222; }
-    nav button { flex: 1; padding: 15px 0; border: none; background: transparent; color: #666; font-weight: 700; cursor: pointer; font-size: 0.8em; }
-    nav button.active { color: var(--gold); border-bottom: 3px solid var(--gold); }
+    header { background: #000; padding: 15px; text-align: center; border-bottom: 1px solid #222; color: var(--gold); font-weight: 700; font-size: 1.2em; letter-spacing: 3px; }
+    nav { display: flex; background: #111; border-bottom: 1px solid #222; }
+    nav button { flex: 1; padding: 18px 0; border: none; background: transparent; color: #666; font-weight: 700; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
+    nav button.active { color: var(--gold); border-bottom: 3px solid var(--gold); background: rgba(212,175,55,0.05); }
 
-    main { flex: 1; overflow-y: auto; padding: 10px; -webkit-overflow-scrolling: touch; }
-    section { display: none; width: 100%; max-width: 1000px; margin: 0 auto; }
-    section.active { display: block; animation: fadeIn 0.2s ease; }
+    main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    section { display: none; height: 100%; width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
+    section.active { display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
 
-    /* Hesap Makinesi Düzeni */
-    .calc-layout { display: flex; gap: 15px; align-items: flex-start; }
-    .left-side { flex: 2; display: flex; flex-direction: column; gap: 10px; }
-    .right-side { flex: 1; min-width: 220px; }
+    .calc-layout { display: flex; gap: 25px; height: 100%; }
+    
+    /* Sol Taraf: Ürünler */
+    .left-side { flex: 1.6; display: flex; flex-direction: column; }
+    #gram { width: 100%; padding: 20px; background: #000; border: 1px solid #333; border-radius: 14px; color: var(--gold); font-size: 2.8em; text-align: center; font-weight: bold; margin-bottom: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); }
+    
+    .scroll-area { flex: 1; overflow-y: auto; padding-right: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    
+    /* Ürün Kartı Tasarımı */
+    .card { 
+        background: var(--card-bg); border-radius: var(--radius); padding: 25px 20px; 
+        text-align: left; border: 1px solid #333; cursor: pointer; transition: 0.2s;
+        display: flex; flex-direction: column; justify-content: center; gap: 8px;
+    }
+    .card:active { transform: scale(0.97); background: #222; border-color: var(--gold); }
+    .card b { color: #fff; font-size: 1.2em; display: block; }
+    .card span { color: #888; font-size: 0.95em; }
 
-    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .numpad button { background: #1a1a1a; border: 1px solid #333; color: white; padding: 22px 10px; border-radius: 10px; font-size: 1.5em; font-weight: bold; cursor: pointer; }
+    /* Sağ Taraf: Numpad ve Sonuç */
+    .right-side { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
+    .numpad-box { background: #111; padding: 20px; border-radius: var(--radius); border: 1px solid #222; }
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .numpad button { background: #222; border: 1px solid #333; color: white; padding: 22px 5px; border-radius: 12px; font-size: 1.6em; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .numpad button:active { background: var(--gold); color: black; }
     
-    input#gram { width: 100%; padding: 20px; background: #111; border: 2px solid #333; border-radius: var(--radius); color: var(--gold); font-size: 2.2em; text-align: center; font-weight: bold; margin-bottom: 5px; }
-    
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 10px; text-align: center; border: 1px solid #252525; cursor: pointer; transition: 0.2s; }
-    .card:active { transform: scale(0.95); }
-    .card b { display: block; color: var(--gold); font-size: 1.1em; }
+    /* Sticky Result Harmanlanmış */
+    .sticky-result { background: #111; border: 1px solid var(--gold); border-radius: var(--radius); padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .sticky-result small { color: #888; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+    .sticky-result b { font-size: 2.4em; color: var(--gold); display: block; margin-top: 10px; }
 
-    .list-item { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
-    .btn-action { border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .btn-main { background: var(--gold); color: #000; padding: 15px; border-radius: 10px; width: 100%; font-weight: 700; cursor: pointer; margin-bottom: 10px; border:none; }
-    
-    .result-bar { background: #000; padding: 15px 25px; border-top: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+    /* Premium List Item (SAT/SİL) */
+    .list-item { background: #1a1a1a; padding: 18px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--gold); }
+    .btn-sat { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
+    .btn-sil { background: transparent; color: #ff4d4d; border: 1.5px solid #ff4d4d; padding: 8px 18px; border-radius: 50px; font-weight: 700; cursor: pointer; margin-left: 8px; }
 
-    @media (max-width: 600px) { .calc-layout { flex-direction: column; } .right-side { width: 100%; order: -1; } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .btn-main { background: var(--gold); color: #000; padding: 18px; border-radius: 12px; width: 100%; font-weight: 700; border:none; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
+    .btn-main:active { transform: scale(0.98); }
+
+    @media (max-width: 900px) {
+        .calc-layout { flex-direction: column; overflow-y: auto; }
+        .right-side { min-width: 100%; }
+        body { overflow: auto; }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div style="width: 100%; max-width: 320px; text-align: center;">
-        <h2 style="color:var(--gold); letter-spacing: 4px; margin-bottom:30px;">EMRE GÜMÜŞ</h2>
-        <input type="password" id="passInput" class="premium-input" placeholder="SİSTEM ŞİFRESİ" autofocus>
-        <button class="btn-main" onclick="checkLogin()">GİRİŞ YAP</button>
+        <h2 style="color:var(--gold); letter-spacing: 5px; margin-bottom:40px;">EMRE GÜMÜŞ</h2>
+        <input type="password" id="passInput" class="premium-input" placeholder="Giriş Şifresi" autofocus>
+        <button class="btn-main" onclick="checkLogin()">PANELE GİRİŞ</button>
     </div>
 </div>
 
 <div id="app" style="display:none; flex-direction: column; height: 100vh;">
-    <header>EMRE GÜMÜŞ</header>
+    <header>EMRE GÜMÜŞ | GOLD TRACKER</header>
     <nav>
-        <button id="btn-hesap" class="active" onclick="openTab('hesap',this)">HESAP</button>
-        <button id="btn-rapor" onclick="openTab('rapor',this)">ARŞİV</button>
+        <button id="btn-hesap" class="active" onclick="openTab('hesap',this)">HESAPLAMA</button>
+        <button id="btn-rapor" onclick="openTab('rapor',this)">ARŞİV & ANALİZ</button>
         <button id="btn-ayar" onclick="openTab('ayar',this)">AYARLAR</button>
     </nav>
 
@@ -82,57 +98,64 @@
             <div class="calc-layout">
                 <div class="left-side">
                     <input type="text" id="gram" placeholder="0.00" readonly>
-                    <div class="grid" id="urunler"></div>
+                    <div class="scroll-area">
+                        <div class="grid" id="urunler"></div>
+                        <h4 style="color:var(--gold); margin:30px 0 15px; letter-spacing: 1px;">BEKLEYEN İŞLEMLER</h4>
+                        <div id="bekleyen"></div>
+                    </div>
                 </div>
+
                 <div class="right-side">
-                    <div class="numpad">
-                        <button onclick="numIn('1')">1</button><button onclick="numIn('2')">2</button><button onclick="numIn('3')">3</button>
-                        <button onclick="numIn('4')">4</button><button onclick="numIn('5')">5</button><button onclick="numIn('6')">6</button>
-                        <button onclick="numIn('7')">7</button><button onclick="numIn('8')">8</button><button onclick="numIn('9')">9</button>
-                        <button onclick="numIn('.')">,</button><button onclick="numIn('0')">0</button><button style="color:var(--danger)" onclick="numIn('C')">C</button>
+                    <div class="numpad-box">
+                        <div class="numpad">
+                            <button onclick="numIn('1')">1</button><button onclick="numIn('2')">2</button><button onclick="numIn('3')">3</button>
+                            <button onclick="numIn('4')">4</button><button onclick="numIn('5')">5</button><button onclick="numIn('6')">6</button>
+                            <button onclick="numIn('7')">7</button><button onclick="numIn('8')">8</button><button onclick="numIn('9')">9</button>
+                            <button onclick="numIn('.')">,</button><button onclick="numIn('0')">0</button><button style="color:var(--danger)" onclick="numIn('C')">C</button>
+                            <button style="grid-column: span 3; color:var(--info); font-size: 1em;" onclick="numIn('B')">← GERİ SİL</button>
+                        </div>
+                    </div>
+                    
+                    <div class="sticky-result">
+                        <small>Hesaplanan Tutar</small>
+                        <b id="sonuc">0,00 ₺</b>
                     </div>
                 </div>
             </div>
-            <h4 style="color:var(--danger); margin:20px 0 10px">BEKLEYEN İŞLEMLER</h4>
-            <div id="bekleyen"></div>
         </section>
 
         <section id="rapor">
-            <div style="background:#111; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #222; height: 220px;">
+            <div style="background:#111; padding:20px; border-radius:14px; margin-bottom:20px; border:1px solid #222; height: 250px;">
                 <canvas id="ciroChart"></canvas>
             </div>
-            <button class="btn-main" onclick="gunSonu()">📅 GÜNÜ KAPAT VE RAPORLA</button>
-            <div id="arsivList"></div>
+            <div class="scroll-area">
+                <button class="btn-main" onclick="gunSonu()" style="margin-bottom:20px; background: var(--success); color: #fff;">📅 GÜNÜ KAPAT VE RAPORLA</button>
+                <div id="arsivList"></div>
+            </div>
         </section>
 
         <section id="ayar">
-            <div style="background:var(--card-bg); padding:15px; border-radius:var(--radius); margin-bottom:20px; border: 1px solid var(--info)">
-                <h4 style="margin-top:0; color:var(--info)">WHATSAPP RAPOR AYARI</h4>
-                <input id="wpTel" class="premium-input" placeholder="905XXXXXXXXX" onchange="saveWp()">
-                <small style="color:#666; display:block; text-align:center">Raporun gideceği numarayı yaz kanka.</small>
+            <div class="scroll-area">
+                <div style="background:var(--card-bg); padding:25px; border-radius:var(--radius); margin-bottom:20px; border: 1px solid #333">
+                    <h4 style="margin-top:0; color:var(--info)">WHATSAPP RAPOR NUMARASI</h4>
+                    <input id="wpTel" class="premium-input" placeholder="905XXXXXXXXX" onchange="saveWp()">
+                </div>
+                <div style="background:var(--card-bg); padding:25px; border-radius:var(--radius); border: 1px solid #333">
+                    <h4 id="ayarTitle" style="margin-top:0; color:var(--gold)">ÜRÜN EKLE / DÜZENLE</h4>
+                    <input id="urunAd" class="premium-input" placeholder="Ürün İsmi (Örn: 22 Ayar)">
+                    <input id="urunFiyat" type="number" class="premium-input" placeholder="Gram Fiyatı (₺)">
+                    <button id="saveBtn" class="btn-main" onclick="urunEkle()">SİSTEME KAYDET</button>
+                    <button id="cancelEdit" class="btn-sil" style="display:none; width:100%; margin-top:15px; padding:15px;" onclick="resetEdit()">VAZGEÇ</button>
+                </div>
+                <h4 style="color:var(--gold); margin-top:30px">KAYITLI ÜRÜNLER</h4>
+                <div id="ayarList"></div>
             </div>
-
-            <div style="background:var(--card-bg); padding:20px; border-radius:var(--radius); border: 1px solid #333">
-                <h4 id="ayarTitle" style="margin-top:0; color:var(--gold)">ÜRÜN YÖNETİMİ</h4>
-                <input id="urunAd" class="premium-input" placeholder="Ürün İsmi">
-                <input id="urunFiyat" type="number" class="premium-input" placeholder="Gram Fiyatı (₺)">
-                <button id="saveBtn" class="btn-main" onclick="urunEkle()">KAYDET</button>
-                <button id="cancelEdit" class="btn-action" style="display:none; width:100%; background:#222; color:#888" onclick="resetEdit()">VAZGEÇ</button>
-            </div>
-            
-            <h4 style="color:var(--gold); margin-top:20px">MEVCUT ÜRÜNLER</h4>
-            <div id="ayarList"></div>
         </section>
     </main>
-
-    <div class="result-bar">
-        <span style="font-weight:bold; color:#666">HESAP:</span>
-        <b id="sonuc" style="font-size:1.8em; color:var(--gold)">0,00 ₺</b>
-    </div>
 </div>
 
 <script>
-let urunler = JSON.parse(localStorage.getItem("urunler")) || [{ad:"22 Ayar", fiyat:2450}];
+let urunler = JSON.parse(localStorage.getItem("urunler")) || [{ad:"22 Ayar", fiyat:2450}, {ad:"14 Ayar", fiyat:1650}];
 let kayitlar = JSON.parse(localStorage.getItem("kayitlar")) || [];
 let editIndex = -1;
 let myChart = null;
@@ -142,16 +165,16 @@ function checkLogin() {
     if(document.getElementById("passInput").value === sysPass) {
         document.getElementById("loginScreen").style.display = "none";
         document.getElementById("app").style.display = "flex";
-        renderUrunler();
-        loadWp();
-    } else { alert("Şifre Yanlış!"); }
+        renderUrunler(); renderRapor(); loadWp();
+    } else { alert("Hatalı Şifre!"); }
 }
 
 function numIn(val) {
     let inp = document.getElementById("gram");
     if(val === 'C') { inp.value = ""; return; }
+    if(val === 'B') { inp.value = inp.value.slice(0, -1); return; }
     if(val === '.' && inp.value.includes('.')) return;
-    inp.value += val;
+    if(inp.value.length < 10) inp.value += val;
 }
 
 function openTab(id,btn){
@@ -165,7 +188,10 @@ function openTab(id,btn){
 
 function renderUrunler(){
     document.getElementById("urunler").innerHTML = urunler.map((u,i)=>`
-        <div class="card" onclick="hesapla(${i})"><b>${u.ad}</b><small>${u.fiyat} ₺</small></div>
+        <div class="card" onclick="hesapla(${i})">
+            <b>${u.ad}</b>
+            <span>${u.fiyat} ₺/gr</span>
+        </div>
     `).join('');
 }
 
@@ -182,10 +208,10 @@ function hesapla(i){
 function renderRapor(){
     document.getElementById("bekleyen").innerHTML = kayitlar.filter(k=>!k.satildi).map(k=>`
         <div class="list-item">
-            <div><strong>${k.urun}</strong><br><small>${k.gram} gr - ${formatPara(k.tutar)} ₺</small></div>
+            <div><strong>${k.urun}</strong><br><small style="color:#888">${k.gram} gr - ${formatPara(k.tutar)} ₺</small></div>
             <div>
-                <button class="btn-action" style="background:var(--success)" onclick="islemYap(${k.id}, 'sat')">SAT</button>
-                <button class="btn-action" style="background:var(--danger); color:white" onclick="islemYap(${k.id}, 'sil')">X</button>
+                <button class="btn-sat" onclick="islemYap(${k.id}, 'sat')">SAT</button>
+                <button class="btn-sil" onclick="islemYap(${k.id}, 'sil')">SİL</button>
             </div>
         </div>`).join('');
 }
@@ -200,10 +226,10 @@ function islemYap(id, tip){
 function renderAyar(){
     document.getElementById("ayarList").innerHTML = urunler.map((u,i)=>`
         <div class="list-item">
-            <div><strong>${u.ad}</strong><br><small>${u.fiyat} ₺</small></div>
-            <div style="display:flex; gap:5px">
-                <button class="btn-action" style="background:var(--info); color:white" onclick="editMode(${i})">DÜZENLE</button>
-                <button class="btn-action" style="background:var(--danger); color:white" onclick="urunSil(${i})">SİL</button>
+            <div><strong>${u.ad}</strong><br><small style="color:#888">${u.fiyat} ₺</small></div>
+            <div>
+                <button class="btn-sat" style="background:#444" onclick="editMode(${i})">DÜZENLE</button>
+                <button class="btn-sil" onclick="urunSil(${i})">SİL</button>
             </div>
         </div>`).join('');
 }
@@ -212,8 +238,8 @@ function editMode(i) {
     editIndex = i;
     document.getElementById("urunAd").value = urunler[i].ad;
     document.getElementById("urunFiyat").value = urunler[i].fiyat;
-    document.getElementById("ayarTitle").innerText = "ÜRÜNÜ GÜNCELLE";
-    document.getElementById("saveBtn").innerText = "GÜNCELLE";
+    document.getElementById("ayarTitle").innerText = "ÜRÜNÜ DÜZENLE";
+    document.getElementById("saveBtn").innerText = "GÜNCELLEMEYİ KAYDET";
     document.getElementById("cancelEdit").style.display = "block";
 }
 
@@ -221,8 +247,8 @@ function resetEdit() {
     editIndex = -1;
     document.getElementById("urunAd").value = "";
     document.getElementById("urunFiyat").value = "";
-    document.getElementById("ayarTitle").innerText = "ÜRÜN YÖNETİMİ";
-    document.getElementById("saveBtn").innerText = "KAYDET";
+    document.getElementById("ayarTitle").innerText = "ÜRÜN EKLE / DÜZENLE";
+    document.getElementById("saveBtn").innerText = "SİSTEME KAYDET";
     document.getElementById("cancelEdit").style.display = "none";
 }
 
@@ -234,27 +260,22 @@ function urunEkle(){
     save(); renderUrunler(); renderAyar(); resetEdit();
 }
 
-function urunSil(i){ if(confirm("Silinsin mi?")){ urunler.splice(i, 1); save(); renderAyar(); renderUrunler(); } }
-
+function urunSil(i){ if(confirm("Ürün silinsin mi?")){ urunler.splice(i, 1); save(); renderAyar(); renderUrunler(); } }
 function saveWp() { localStorage.setItem("wpTel", document.getElementById("wpTel").value); }
 function loadWp() { document.getElementById("wpTel").value = localStorage.getItem("wpTel") || ""; }
 
 function gunSonu(){
     let satilanlar = kayitlar.filter(x=>x.satildi);
-    if(!satilanlar.length) return alert("Satış yok!");
-    
+    if(!satilanlar.length) return alert("Kapatılacak satış bulunamadı!");
     let d = new Date(), t = d.toLocaleDateString('tr-TR'), ciro = satilanlar.reduce((s,i)=>s+i.tutar, 0);
-    
-    // Arşivle
     let key = "arsiv_" + d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') + "_" + d.getTime();
     localStorage.setItem(key, JSON.stringify({ label: t, data: satilanlar }));
 
-    // WP Mesaj
-    let msg = `📱 *EMRE GÜMÜŞ GÜN SONU*\n📅 *Tarih:* ${t}\n💰 *Ciro:* ${formatPara(ciro)} ₺\n------------------\n`;
+    let msg = `📱 *EMRE GÜMÜŞ RAPOR*\n💰 *Ciro:* ${formatPara(ciro)} ₺\n------------------\n`;
     satilanlar.forEach(s=> msg += `- ${s.urun}: ${s.gram}gr\n`);
     
     let tel = localStorage.getItem("wpTel");
-    if(tel && confirm("Rapor WhatsApp ile gönderilsin mi?")) window.open(`https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(msg)}`, '_blank');
+    if(tel && confirm("WhatsApp raporu gönderilsin mi?")) window.open(`https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(msg)}`, '_blank');
 
     kayitlar = kayitlar.filter(x=>!x.satildi);
     save(); renderRapor(); renderArsiv(); renderChart();
@@ -270,14 +291,14 @@ function renderChart() {
         data.push((obj.data || []).reduce((s, i) => s + i.tutar, 0));
     });
     if(myChart) myChart.destroy();
-    myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Ciro', data, backgroundColor: '#D4AF37' }] }, options: { responsive: true, maintainAspectRatio: false } });
+    myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Ciro', data, backgroundColor: '#D4AF37', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#222' } } } } });
 }
 
 function renderArsiv(){
     const keys = Object.keys(localStorage).filter(k=>k.startsWith("arsiv_")).sort().reverse();
     document.getElementById("arsivList").innerHTML = keys.map(k=> {
         let obj = JSON.parse(localStorage.getItem(k));
-        return `<div class="list-item"><span>📂 ${obj.label}</span><button class="btn-action" style="background:var(--danger); color:white" onclick="localStorage.removeItem('${k}');renderArsiv();">SİL</button></div>`;
+        return `<div class="list-item"><span>📂 ${obj.label}</span><button class="btn-sil" onclick="localStorage.removeItem('${k}');renderArsiv();">SİL</button></div>`;
     }).join('');
 }
 
