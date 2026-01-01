@@ -15,7 +15,6 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
     body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
 
-    /* Giriş */
     #loginScreen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .premium-input { width: 100%; padding: 18px; background: #111; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 1.1em; margin-bottom: 12px; text-align: center; }
     
@@ -30,14 +29,12 @@
 
     .calc-layout { display: flex; gap: 25px; height: 100%; }
     
-    /* Sol Taraf: Ürünler */
     .left-side { flex: 1.6; display: flex; flex-direction: column; }
     #gram { width: 100%; padding: 20px; background: #000; border: 1px solid #333; border-radius: 14px; color: var(--gold); font-size: 2.8em; text-align: center; font-weight: bold; margin-bottom: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); }
     
     .scroll-area { flex: 1; overflow-y: auto; padding-right: 10px; }
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     
-    /* Ürün Kartı Tasarımı */
     .card { 
         background: var(--card-bg); border-radius: var(--radius); padding: 25px 20px; 
         text-align: left; border: 1px solid #333; cursor: pointer; transition: 0.2s;
@@ -47,25 +44,21 @@
     .card b { color: #fff; font-size: 1.2em; display: block; }
     .card span { color: #888; font-size: 0.95em; }
 
-    /* Sağ Taraf: Numpad ve Sonuç */
     .right-side { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 20px; }
     .numpad-box { background: #111; padding: 20px; border-radius: var(--radius); border: 1px solid #222; }
     .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .numpad button { background: #222; border: 1px solid #333; color: white; padding: 22px 5px; border-radius: 12px; font-size: 1.6em; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .numpad button:active { background: var(--gold); color: black; }
     
-    /* Sticky Result Harmanlanmış */
     .sticky-result { background: #111; border: 1px solid var(--gold); border-radius: var(--radius); padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .sticky-result small { color: #888; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
     .sticky-result b { font-size: 2.4em; color: var(--gold); display: block; margin-top: 10px; }
 
-    /* Premium List Item (SAT/SİL) */
     .list-item { background: #1a1a1a; padding: 18px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--gold); }
     .btn-sat { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
     .btn-sil { background: transparent; color: #ff4d4d; border: 1.5px solid #ff4d4d; padding: 8px 18px; border-radius: 50px; font-weight: 700; cursor: pointer; margin-left: 8px; }
 
     .btn-main { background: var(--gold); color: #000; padding: 18px; border-radius: 12px; width: 100%; font-weight: 700; border:none; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
-    .btn-main:active { transform: scale(0.98); }
 
     @media (max-width: 900px) {
         .calc-layout { flex-direction: column; overflow-y: auto; }
@@ -142,7 +135,7 @@
                 </div>
                 <div style="background:var(--card-bg); padding:25px; border-radius:var(--radius); border: 1px solid #333">
                     <h4 id="ayarTitle" style="margin-top:0; color:var(--gold)">ÜRÜN EKLE / DÜZENLE</h4>
-                    <input id="urunAd" class="premium-input" placeholder="Ürün İsmi (Örn: 22 Ayar)">
+                    <input id="urunAd" class="premium-input" placeholder="Ürün İsmi">
                     <input id="urunFiyat" type="number" class="premium-input" placeholder="Gram Fiyatı (₺)">
                     <button id="saveBtn" class="btn-main" onclick="urunEkle()">SİSTEME KAYDET</button>
                     <button id="cancelEdit" class="btn-sil" style="display:none; width:100%; margin-top:15px; padding:15px;" onclick="resetEdit()">VAZGEÇ</button>
@@ -155,7 +148,19 @@
 </div>
 
 <script>
-let urunler = JSON.parse(localStorage.getItem("urunler")) || [{ad:"22 Ayar", fiyat:2450}, {ad:"14 Ayar", fiyat:1650}];
+// YENİ VARYAYILAN ÜRÜN LİSTESİ
+let varsayilanUrunler = [
+    {ad:"Kadın Yüzük", fiyat:200},
+    {ad:"Erkek Bileklik", fiyat:300},
+    {ad:"Küpe", fiyat:200},
+    {ad:"Alyans", fiyat:200},
+    {ad:"Takım Set", fiyat:250},
+    {ad:"Kadın Bileklik", fiyat:200},
+    {ad:"Erkek Yüzük", fiyat:200},
+    {ad:"İşçilikli Ürün", fiyat:300}
+];
+
+let urunler = JSON.parse(localStorage.getItem("urunler")) || varsayilanUrunler;
 let kayitlar = JSON.parse(localStorage.getItem("kayitlar")) || [];
 let editIndex = -1;
 let myChart = null;
